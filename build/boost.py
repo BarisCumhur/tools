@@ -20,7 +20,6 @@ def do_install(deps_path, install_path):
         f'-s ZLIB_BINARY="{install_path}/bin"',
         f'-s ZLIB_INCLUDE="{install_path}/include"',
         f'-s ZLIB_LIBPATH="{install_path}/lib"',
-        f'-s ZLIB_SOURCE="{deps_path}/zlib"',
         f'-j{multiprocessing.cpu_count()} ',
         f'--prefix={install_path}'
     ])
