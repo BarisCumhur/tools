@@ -12,3 +12,11 @@ def run(cmd, description):
         exit(-1)
 
     return True
+
+
+def add_env(key, value):
+    old = os.environ.get(key)
+    if old is not None:
+        os.environ[key] = f"{value}{LIST_SEP}{old}"
+    else:
+        os.environ[key] = value
