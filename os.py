@@ -1,9 +1,9 @@
 import os
 
-SHELL_EXT = ".sh" if os.name == "posix" else ".bat"
-EXE_EXT = "" if os.name == "posix" else ".exe"
-LIST_SEP = ":" if os.name == "posix" else ";"
-PATH_SEP = "/" if os.name == "posix" else "\\"
+SHELL_EXT = ".bat" if os.name == "nt" else ".sh"
+EXE_EXT = ".exe" if os.name == "nt" else ""
+LIST_SEP = ";" if os.name == "nt" else ":"
+PATH_SEP = "\\" if os.name == "nt" else "/"
 
 
 def run(cmd, description):
