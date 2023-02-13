@@ -1,18 +1,18 @@
 import os
 import multiprocessing
 import shutil
+import tools.os
 
 
 def do_install(deps_path, install_path):
 
-    package_name = "boost"
-
     old_cwd = os.getcwd()
-    os.chdir(f"{deps_path}/{package_name}")
-    if not os.path.isfile("b2") and not os.path.isfile("b2.exe"):
-        if os.system(f'bootstrap') != 0:
-            print("bootstrap failed")
-            exit(-1)
+    os.chdir(f"{deps_path}/boost")
+    if not os.path.isfile("b2.{tools.os.EXE_EXT}"):
+        tools.os.run(
+            f'.{tools.os.PATH_SEP}bootstrap{tools.os.SHELL_EXT}',
+            "bootstrap"
+        )
     else:
         shutil.rmtree("bin.v2")
 
@@ -25,11 +25,13 @@ def do_install(deps_path, install_path):
         f'--prefix={install_path}'
     ])
 
-    if os.system(f"b2 headers {build_options}") != 0:
-        print("build failed")
-        exit(-1)
-    if os.system(f"b2 install {build_options}") != 0:
-        print("install failed")
-        exit(-1)
+    tools.os.run(
+        f".{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} headers {build_options}",
+        "build"
+    )
+    tools.os.run(
+        f".{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} install {build_options}",
+        "install"
+    )
 
     os.chdir(old_cwd)
