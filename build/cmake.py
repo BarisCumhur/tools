@@ -28,3 +28,7 @@ def do_install(src_path, build_path, install_path, options):
     )
 
     os.chdir(old_cwd)
+
+
+def package_exists(name, compiler_id='GNU'):
+    return os.system(f'cmake --find-package -DNAME={name} -DCOMPILER_ID={compiler_id} -DLANGUAGE=CXX -DMODE=EXIST') == 0

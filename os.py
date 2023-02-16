@@ -1,4 +1,5 @@
 import os
+import shutil
 
 SHELL_EXT = ".bat" if os.name == "nt" else ".sh"
 EXE_EXT = ".exe" if os.name == "nt" else ""
@@ -9,6 +10,13 @@ PATH_SEP = "\\" if os.name == "nt" else "/"
 def run(cmd, description):
     if os.system(cmd) != 0:
         print(f"{description} failed")
+        exit(-1)
+
+    return True
+
+def check(cmd, fail_msg):
+    if shutil.which("vcvars64.bat") is None:
+        print(fail_msg)
         exit(-1)
 
     return True
