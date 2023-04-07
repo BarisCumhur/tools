@@ -2,9 +2,12 @@ import os
 import multiprocessing
 import shutil
 import tools.os
+import tools.git
 
 
 def do_install(src_path, install_path):
+
+    tools.git.prepare_submodule(src_path)
 
     old_cwd = os.getcwd()
     os.chdir(src_path)

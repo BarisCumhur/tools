@@ -1,19 +1,22 @@
 import os
 import multiprocessing
 import tools.os
+import tools.git
 
 
 def do_install(src_path, build_path, install_path, options):
     if not os.path.isdir(build_path):
         os.makedirs(build_path)
 
+    tools.git.prepare_submodule(src_path)
+    old_cwd = os.getcwd()
+    os.chdir(build_path)
+
     joined_options = ' '.join([
         '-DCMAKE_DEBUG_POSTFIX=d',
         f'-DCMAKE_INSTALL_PREFIX={install_path}'
     ] + options)
 
-    old_cwd = os.getcwd()
-    os.chdir(build_path)
     tools.os.run(
         f'cmake {src_path} {joined_options}',
         "configuration"
