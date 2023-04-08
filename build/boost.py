@@ -5,7 +5,7 @@ import tools.os
 import tools.git
 
 
-def do_install(src_path, install_path):
+def do_install(src_path, install_path, options=[]):
 
     tools.git.prepare_submodule(src_path)
 
@@ -25,7 +25,7 @@ def do_install(src_path, install_path):
         f'-s ZLIB_LIBPATH="{install_path}/lib"',
         f'-j{multiprocessing.cpu_count()} ',
         f'--prefix={install_path}'
-    ])
+    ] + options)
 
     tools.os.run(
         f".{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} headers {build_options}",
