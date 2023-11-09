@@ -20,9 +20,6 @@ def do_install(src_path, install_path, options=[]):
         shutil.rmtree("bin.v2")
 
     build_options = ' '.join([
-        f'-s ZLIB_BINARY="{install_path}/bin"',
-        f'-s ZLIB_INCLUDE="{install_path}/include"',
-        f'-s ZLIB_LIBPATH="{install_path}/lib"',
         f'-j{multiprocessing.cpu_count()} ',
         f'--prefix={install_path}'
     ] + options)
