@@ -16,8 +16,6 @@ def do_install(src_path, install_path, options=[]):
             f'.{tools.os.PATH_SEP}bootstrap{tools.os.SHELL_EXT}',
             "bootstrap"
         )
-    else:
-        shutil.rmtree("bin.v2")
 
     build_options = ' '.join([
         f'-j{multiprocessing.cpu_count()} ',

@@ -16,7 +16,7 @@ def prepare_submodule(src_path):
     old_cwd = os.getcwd()
     os.chdir(src_path)
     tools.os.run(f'git reset --hard', "reset")
-    tools.os.run(f'git clean -fdx', "clean")
+    # tools.os.run(f'git clean -fdx', "clean")
     os.chdir(old_cwd)
 
     init_submodules(src_path)
