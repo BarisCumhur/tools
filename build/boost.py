@@ -5,15 +5,16 @@ import tools.os
 import tools.git
 
 
-def do_install(src_path, install_path, options=[]):
+def do_install(src_path, build_path, install_path, options=[]):
 
     tools.git.prepare_submodule(src_path)
 
     old_cwd = os.getcwd()
-    os.chdir(src_path)
-    if not os.path.isfile("b2{tools.os.EXE_EXT}"):
+    os.chdir(build_path)
+    if not os.path.isfile(f"./b2{tools.os.EXE_EXT}"):
+        print("Bootstrapping boost...")
         tools.os.run(
-            f'.{tools.os.PATH_SEP}bootstrap{tools.os.SHELL_EXT}',
+            f'{src_path}{tools.os.PATH_SEP}bootstrap{tools.os.SHELL_EXT}',
             "bootstrap"
         )
 
@@ -22,12 +23,14 @@ def do_install(src_path, install_path, options=[]):
         f'--prefix={install_path}'
     ] + options)
 
+    
+    os.chdir(src_path)
     tools.os.run(
-        f".{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} headers {build_options}",
+        f"{build_path}{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} --build-dir={build_path}/.. headers {build_options}",
         "build"
     )
     tools.os.run(
-        f".{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} install {build_options}",
+        f"{build_path}{tools.os.PATH_SEP}b2{tools.os.EXE_EXT} --build-dir={build_path}/.. install {build_options}",
         "install"
     )
 
