@@ -6,6 +6,12 @@ import tools.git
 
 
 def do_install(src_path, build_path, install_path, options=[]):
+    src_path = os.path.abspath(src_path)
+    build_path = os.path.abspath(build_path)
+    install_path = os.path.abspath(install_path)
+    
+    if not os.path.isdir(build_path):
+        os.makedirs(build_path)
 
     tools.git.prepare_submodule(src_path)
 
