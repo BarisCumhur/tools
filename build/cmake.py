@@ -4,7 +4,9 @@ import tools.os
 import tools.git
 
 
-def do_install(src_path, build_path, install_path, options, wrapper=""):
+def do_install(
+    src_path, build_path, install_path, generator=None, wrapper="", debug=True, **kwargs
+):
     src_path = os.path.abspath(src_path)
     build_path = os.path.abspath(build_path)
     install_path = os.path.abspath(install_path)
@@ -16,15 +18,26 @@ def do_install(src_path, build_path, install_path, options, wrapper=""):
     old_cwd = os.getcwd()
     os.chdir(build_path)
 
-    joined_options = " ".join(
-        ["-DCMAKE_DEBUG_POSTFIX=d", f"-DCMAKE_INSTALL_PREFIX={install_path}"] + options
-    )
+    options = []
+    if generator:
+        options.append(f"-G{generator}")
+
+    for key, value in kwargs.items():
+        options.append(f"-D{key}={value}")
+
+    options.append(f"-DCMAKE_INSTALL_PREFIX={install_path}")
+    if debug:
+        options.append("-DCMAKE_DEBUG_POSTFIX=d")
+
+    joined_options = " ".join(options)
 
     tools.os.run(f"{wrapper} cmake {src_path} {joined_options}", "configuration")
-    tools.os.run(
-        f"cmake --build . --target install --config Debug --parallel {multiprocessing.cpu_count()}",
-        "debug install",
-    )
+
+    if debug:
+        tools.os.run(
+            f"cmake --build . --target install --config Debug --parallel {multiprocessing.cpu_count()}",
+            "debug install",
+        )
     tools.os.run(
         f"cmake --build . --target install --config Release --parallel {multiprocessing.cpu_count()}",
         "release install",
