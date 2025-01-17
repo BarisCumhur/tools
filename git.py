@@ -67,21 +67,31 @@ def submodules(path):
     return []
 
 
-def bundle(path, outdir):
+def bundle(path, outdir, name = None):
+    path = os.path.abspath(path)
+    outdir = os.path.abspath(outdir)
+    
     if is_git_dir(path):
+        init_submodules(path)
         old_cwd = os.getcwd()
         os.chdir(path)
-        init_submodules(path)
-        name = os.path.basename(path)
+        if name is None:
+            name = os.path.basename(path)
         tools.os.run(f"git bundle create {name} --all", "bundle")
         if not os.path.isdir(outdir):
             os.mkdir(outdir)
         os.rename(name, os.path.join(outdir, name))
         os.chdir(old_cwd)
+        return
+    
+    print(f"not a git repo: {path}")
+    
 
         
 def bundle_submodules(path, outdir):
     if is_git_dir(path):
         for sm in submodules(path):
             bundle(os.path.join(path, sm['path']), outdir)
+        return
+    print(f"not a git repo: {path}")
         
