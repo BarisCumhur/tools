@@ -2,41 +2,30 @@ import configparser
 import os
 import tools.os
 
+
 def is_git_dir(path):
     if os.path.isdir(path):
-        old_cwd = os.getcwd()
-        os.chdir(path)
-        result = os.system(f"git rev-parse")
-        os.chdir(old_cwd)
-        return result == 0
+        return tools.os.run(f"git rev-parse", "git rev-parse", path, None) == 0
     return False
 
+
 def init_submodules(path):
-    old_cwd = os.getcwd()
-    os.chdir(path)
-    tools.os.run(f"git submodule update --init --recursive", "pull")
-    os.chdir(old_cwd)
+    tools.os.run(f"git submodule update --init --recursive", "pull", path)
 
 
 def checkout(path, tag):
     if is_git_dir(path):
-        old_cwd = os.getcwd()
-        os.chdir(path)
-        tools.os.run(f"git reset --hard", "reset")
-        tools.os.run(f"git clean -fdx", "clean")
-        tools.os.run(f"git checkout {tag}", "checkout")
-        tools.os.run(f"git pull", "pull")
-        os.chdir(old_cwd)
+        tools.os.run(f"git reset --hard", "reset", path)
+        tools.os.run(f"git clean -fdx", "clean", path)
+        tools.os.run(f"git checkout {tag}", "checkout", path)
+        tools.os.run(f"git pull", "pull", path)
 
 
 def prepare_submodule(path):
     if is_git_dir(path):
-        old_cwd = os.getcwd()
-        os.chdir(path)
-        tools.os.run(f"git reset --hard", "reset")
-        tools.os.run(f"git clean -fdx", "clean")
-        tools.os.run(f"git pull", "pull")
-        os.chdir(old_cwd)
+        tools.os.run(f"git reset --hard", "reset", path)
+        tools.os.run(f"git clean -fdx", "clean", path)
+        # tools.os.run(f"git pull", "pull", path)
 
         init_submodules(path)
 
@@ -56,42 +45,38 @@ def submodules(path):
         for section in config.sections():
             if section.startswith("submodule"):
                 submodule_name = section.split('"')[1]  # Extract the submodule name
-                d = {
-                    key: config[section][key] for key in config[section]
-                }
+                d = {key: config[section][key] for key in config[section]}
                 d["name"] = submodule_name
                 submodules.append(d)
 
         return submodules
-    
+
     return []
 
 
-def bundle(path, outdir, name = None):
+def bundle(path, outdir, name=None):
     path = os.path.abspath(path)
     outdir = os.path.abspath(outdir)
-    
+
     if is_git_dir(path):
         init_submodules(path)
         old_cwd = os.getcwd()
         os.chdir(path)
         if name is None:
             name = os.path.basename(path)
-        tools.os.run(f"git bundle create {name} --all", "bundle")
+        tools.os.run(f"git bundle create {name} --all", "bundle", path)
         if not os.path.isdir(outdir):
             os.mkdir(outdir)
         os.rename(name, os.path.join(outdir, name))
         os.chdir(old_cwd)
         return
-    
-    print(f"not a git repo: {path}")
-    
 
-        
+    print(f"not a git repo: {path}")
+
+
 def bundle_submodules(path, outdir):
     if is_git_dir(path):
         for sm in submodules(path):
-            bundle(os.path.join(path, sm['path']), outdir)
+            bundle(os.path.join(path, sm["path"]), outdir)
         return
     print(f"not a git repo: {path}")
-        

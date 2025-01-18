@@ -15,8 +15,6 @@ def do_install(
         os.makedirs(build_path)
 
     tools.git.prepare_submodule(src_path)
-    old_cwd = os.getcwd()
-    os.chdir(build_path)
 
     options = []
     if generator:
@@ -31,19 +29,19 @@ def do_install(
 
     joined_options = " ".join(options)
 
-    tools.os.run(f"{wrapper} cmake {src_path} {joined_options}", "configuration")
+    tools.os.run(f"{wrapper} cmake {src_path} {joined_options}", "configuration", build_path)
 
     if debug:
         tools.os.run(
             f"cmake --build . --target install --config Debug --parallel {multiprocessing.cpu_count()}",
             "debug install",
+            build_path
         )
     tools.os.run(
         f"cmake --build . --target install --config Release --parallel {multiprocessing.cpu_count()}",
         "release install",
+        build_path
     )
-
-    os.chdir(old_cwd)
 
 
 def package_exists(name, compiler_id="GNU"):

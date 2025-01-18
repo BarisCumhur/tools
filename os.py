@@ -7,11 +7,21 @@ LIST_SEP = ";" if os.name == "nt" else ":"
 PATH_SEP = "\\" if os.name == "nt" else "/"
 
 
-def run(cmd, description):
-    if os.system(cmd) != 0:
+def run(cmd, description, workdir=None, expected=0):
+    owd = os.getcwd()
+    if workdir is not None:
+        os.chdir(workdir)
+    print(f"[execute] {cmd} - {os.getcwd()}")
+    
+    retval = os.system(cmd)
+    os.chdir(owd)
+    if expected is not None and retval != expected:
         print(f"{description} failed")
         exit(-1)
 
+    if expected is None:
+        return retval
+    
     return True
 
 def check(cmd, fail_msg):
