@@ -18,13 +18,13 @@ def checkout(path, tag):
         tools.os.run(f"git reset --hard", "reset", path)
         tools.os.run(f"git clean -fdx", "clean", path)
         tools.os.run(f"git checkout {tag}", "checkout", path)
-        tools.os.run(f"git pull", "pull", path)
+        # tools.os.run(f"git pull", "pull", path)
 
 
 def prepare_submodule(path):
     if is_git_dir(path):
-        tools.os.run(f"git reset --hard", "reset", path)
-        tools.os.run(f"git clean -fdx", "clean", path)
+        # tools.os.run(f"git reset --hard", "reset", path)
+        # tools.os.run(f"git clean -fdx", "clean", path)
         # tools.os.run(f"git pull", "pull", path)
 
         init_submodules(path)
