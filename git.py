@@ -9,8 +9,14 @@ def is_git_dir(path):
     return False
 
 
-def init_submodules(path):
-    tools.os.run(f"git submodule update --init --recursive", "pull", path)
+def init_submodules(path, update=True):
+    tools.os.run(f"git submodule init", "init-submodule", path)
+    if update:
+        update_submodules(path)
+
+
+def update_submodules(path):
+    tools.os.run(f"git submodule update --init --recursive", "update-submodule", path)
 
 
 def checkout(path, tag):
@@ -74,9 +80,37 @@ def bundle(path, outdir, name=None):
     print(f"not a git repo: {path}")
 
 
+def unbundle(path, outdir):
+    path = os.path.abspath(path)
+    outdir = os.path.abspath(outdir)
+    print(f"unbundling {path} to {outdir}")
+
+    if is_git_dir(outdir):
+        if not os.path.isdir(outdir):
+            os.mkdir(outdir)
+        tools.os.run(f"git clone {path}", "unbundle", outdir)
+        return
+
+    print(f"not a git repo: {path}")
+
+
 def bundle_submodules(path, outdir):
     if is_git_dir(path):
         for sm in submodules(path):
             bundle(os.path.join(path, sm["path"]), outdir)
+        return
+    print(f"not a git repo: {path}")
+
+
+def unbundle_submodules(path, bundles):
+    if is_git_dir(path):
+        for sm in submodules(path):
+            submodule_dir = os.path.abspath(os.path.join(path, sm["path"]))
+            if len(os.listdir(submodule_dir)) == 0:
+                submodule_name = os.path.basename(submodule_dir)
+                bundle_path = os.path.abspath(os.path.join(bundles, submodule_name))
+                unbundle(bundle_path, submodule_dir)
+            else:
+                print(f"not an empty directory: {submodule_dir}")
         return
     print(f"not a git repo: {path}")
