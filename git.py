@@ -1,6 +1,7 @@
 import configparser
 import os
 import tools.os
+import uuid
 
 
 def is_git_dir(path):
@@ -70,10 +71,11 @@ def bundle(path, outdir, name=None):
         os.chdir(path)
         if name is None:
             name = os.path.basename(path)
-        tools.os.run(f"git bundle create {name} --all", "bundle", path)
+        uuid_name = uuid.uuid4()
+        tools.os.run(f"git bundle create {uuid_name} --all", "bundle", path)
         if not os.path.isdir(outdir):
             os.mkdir(outdir)
-        os.rename(name, os.path.join(outdir, name))
+        os.rename(f"{uuid_name}", os.path.join(outdir, name))
         os.chdir(old_cwd)
         return
 
