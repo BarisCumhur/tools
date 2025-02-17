@@ -111,7 +111,7 @@ def unbundle_submodules(path, bundles):
             if len(os.listdir(submodule_dir)) == 0:
                 submodule_name = os.path.basename(submodule_dir)
                 bundle_path = os.path.abspath(os.path.join(bundles, submodule_name))
-                unbundle(bundle_path, submodule_dir)
+                unbundle(bundle_path, os.path.join(submodule_dir, ".."))
             else:
                 print(f"not an empty directory: {submodule_dir}")
         return
